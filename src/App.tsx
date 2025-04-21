@@ -16,7 +16,11 @@ function App() {
   
   // Handle authentication state
   useEffect(() => {
-    // Initialize authentication listener in authStore.ts
+    // The auth state initialization is now handled directly in the authStore.ts
+    // through the onAuthStateChange listener, so we don't need to do anything here
+    
+    // This component will re-render once when the auth state initializes
+    // and the loading state changes from true to false
   }, []);
   
   if (loading) {

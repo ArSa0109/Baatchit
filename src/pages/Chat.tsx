@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Moon, Sun, LogOut } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { useChatStore, initializeRealtime } from '../stores/chatStore';
@@ -16,9 +16,15 @@ const Chat: React.FC = () => {
     window.matchMedia('(prefers-color-scheme: dark)').matches
   );
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
+  const realtimeInitialized = useRef(false);
   
   useEffect(() => {
-    const cleanupRealtime = initializeRealtime();
+    // Only initialize realtime once
+    let cleanupFunction = () => {};
+    if (!realtimeInitialized.current) {
+      cleanupFunction = initializeRealtime() || (() => {});
+      realtimeInitialized.current = true;
+    }
     
     const handleResize = () => {
       setIsMobileView(window.innerWidth < 768);
@@ -26,7 +32,7 @@ const Chat: React.FC = () => {
     
     window.addEventListener('resize', handleResize);
     return () => {
-      cleanupRealtime();
+      cleanupFunction();
       window.removeEventListener('resize', handleResize);
     };
   }, []);
