@@ -292,14 +292,17 @@ export const initializeRealtime = () => {
     }, (payload) => {
       const message = payload.new as Message;
       
+      // Get current state before updating to prevent unnecessary re-renders
+      const currentState = useChatStore.getState();
+      
       // Update messages if this is the active conversation
-      if (useChatStore.getState().activeConversation?.id === message.sender_id) {
-        const messages = [...useChatStore.getState().messages, message];
+      if (currentState.activeConversation?.id === message.sender_id) {
+        const messages = [...currentState.messages, message];
         useChatStore.setState({ messages });
         useChatStore.getState().markMessagesAsRead(message.sender_id);
       }
       
-      // Update conversations list
+      // Update conversations list without triggering unnecessary re-renders
       useChatStore.getState().fetchConversations();
     })
     .subscribe();
